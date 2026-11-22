@@ -1,8 +1,9 @@
 # lite-xl-openhtml
 
-A tiny [Lite XL](https://lite-xl.com) plugin: click a `.html` / `.htm` file in
-the sidebar (treeview) to open it in your **default browser**. Hold `Ctrl` while
-clicking to open it in the editor as usual.
+A tiny [Lite XL](https://lite-xl.com) plugin: Ctrl+click a `.html` / `.htm` file in
+the sidebar (treeview) to open it in your **default browser**. A plain click opens
+it in the editor as usual. (Ctrl+click on anything else keeps the treeview's own
+behaviour.)
 
 Works on Windows (`start`), macOS (`open`) and Linux (`xdg-open`).
 

@@ -1,7 +1,7 @@
 -- mod-version:3
 --
--- openhtml: click a .html / .htm file in the treeview to open it in the
--- default browser. Ctrl+click opens it in the editor instead.
+-- openhtml: Ctrl+click on a .html / .htm file in the treeview opens it in the
+-- default browser. A plain click still opens it in the editor.
 
 local core = require "core"
 local command = require "core.command"
@@ -17,34 +17,18 @@ local function open_external(target)
   if not ok then core.error("openhtml: %s", tostring(err)) end
 end
 
-local entry = command.map["treeview:open"]
-local original = entry.perform
-entry.perform = function(...)
-  local item = treeview.selected_item
-  if item and item.type ~= "dir" then
-    local ext = item.abs_filename:lower():match("%.(%w+)$")
-    if ext == "html" or ext == "htm" then
-      open_external(item.abs_filename)
-      return
-    end
-  end
-  return original(...)
-end
-
--- The treeview binds ctrl+click to "new folder", so it never reaches the code
--- above. Take ctrl+click over: on a file open it in the editor, on a folder
--- keep the original behaviour.
+-- The treeview binds ctrl+click to "new folder", so take it over: on an html
+-- file open the browser, anywhere else keep the original behaviour.
 command.add(nil, {
-  ["openhtml:edit"] = function()
+  ["openhtml:browser"] = function()
     local item = treeview.hovered_item
-    if item and item.type ~= "dir" then
+    local ext = item and item.type ~= "dir" and item.abs_filename:lower():match("%.(%w+)$")
+    if ext == "html" or ext == "htm" then
       treeview:set_selection(item)
-      core.try(function()
-        core.root_view:open_doc(core.open_doc(core.normalize_to_project_dir(item.abs_filename)))
-      end)
+      open_external(item.abs_filename)
     else
       command.perform("treeview:new-folder")
     end
   end,
 })
-keymap.add { ["ctrl+lclick"] = "openhtml:edit" }
+keymap.add { ["ctrl+lclick"] = "openhtml:browser" }
